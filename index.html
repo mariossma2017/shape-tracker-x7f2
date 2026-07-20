@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Projeto Shape de Pai</title>
+
+<!-- PWA / iOS -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1c1e24">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shape de Pai">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===================== TOPO ===================== -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-title" id="topbarTitle">Hoje</div>
+      <button class="btn-icon" id="btnTema" aria-label="Alternar tema">
+        <svg viewBox="0 0 24 24" id="iconTema"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36A5.5 5.5 0 0112 5.5c0-.86.13-1.7.37-2.48A9 9 0 0012 3z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================== CONTEÚDO ===================== -->
+  <main class="content" id="content">
+
+    <!-- ---------- HOJE ---------- -->
+    <section class="view" id="view-hoje">
+
+      <div class="greeting-card">
+        <div class="greeting-text">
+          <div class="greeting-hello" id="greetHello">Bom dia, Mario</div>
+          <div class="greeting-date" id="greetDate">Segunda-feira · 20/07/2026</div>
+        </div>
+        <div class="date-nav">
+          <button class="btn-icon-sm" id="btnDataAnterior" aria-label="Dia anterior">‹</button>
+          <button class="btn-chip" id="btnHojeReset">Hoje</button>
+          <button class="btn-icon-sm" id="btnDataProxima" aria-label="Próximo dia">›</button>
+        </div>
+      </div>
+
+      <div class="score-card">
+        <div class="score-ring-wrap">
+          <svg viewBox="0 0 140 140" class="score-ring">
+            <circle cx="70" cy="70" r="60" class="score-ring-bg"></circle>
+            <circle cx="70" cy="70" r="60" class="score-ring-fg" id="scoreRingFg"></circle>
+          </svg>
+          <div class="score-ring-label">
+            <div class="score-num" id="scoreNum">0</div>
+            <div class="score-pct">%</div>
+          </div>
+        </div>
+        <div class="score-info">
+          <div class="score-band" id="scoreBand">—</div>
+          <div class="score-sub">Aderência ao protocolo hoje</div>
+        </div>
+      </div>
+
+      <div class="cat-grid" id="catGrid"></div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Pendente hoje</h2></div>
+        <div id="listaPendentes" class="pending-list"></div>
+        <p class="empty-state" id="pendentesVazio" hidden>Tudo marcado por hoje. 🎉</p>
+      </div>
+
+      <div class="panel" id="cardAgua">
+        <div class="panel-header"><h2>Água</h2></div>
+        <div class="agua-wrap">
+          <div class="agua-bottle">
+            <div class="agua-bottle-fill" id="aguaFill"></div>
+          </div>
+          <div class="agua-info">
+            <div class="agua-num"><span id="aguaAtual">0</span> L <span class="agua-meta">/ <span id="aguaMeta">5</span> L</span></div>
+            <div class="agua-pct" id="aguaPct">0%</div>
+            <div class="agua-restante" id="aguaRestante">Restante: 5 L</div>
+          </div>
+        </div>
+        <div class="quick-btns">
+          <button class="btn btn-secondary btn-sm" data-agua="250">+250ml</button>
+          <button class="btn btn-secondary btn-sm" data-agua="500">+500ml</button>
+          <button class="btn btn-secondary btn-sm" data-agua="750">+750ml</button>
+          <button class="btn btn-secondary btn-sm" data-agua="1000">+1L</button>
+          <button class="btn btn-ghost btn-sm" id="btnAguaDesfazer">Desfazer</button>
+        </div>
+      </div>
+
+      <div class="panel" id="cardCardio">
+        <div class="panel-header"><h2>Cardio</h2></div>
+        <p class="muted small" id="cardioHorarioInfo"></p>
+        <div class="seg-btns">
+          <button class="btn btn-seg" data-cardio="sim" id="btnCardioSim">Sim, fiz</button>
+          <button class="btn btn-seg" data-cardio="nao" id="btnCardioNao">Não fiz</button>
+        </div>
+      </div>
+
+      <div class="panel" id="cardSuplementos">
+        <div class="panel-header"><h2>Suplementação</h2></div>
+        <div id="listaSuplementosHoje" class="supl-list"></div>
+      </div>
+
+    </section>
+
+    <!-- ---------- TREINO ---------- -->
+    <section class="view" id="view-treino" hidden>
+      <div class="view-header">
+        <h1>Treino</h1>
+        <p class="subtitle" id="treinoSubtitle">—</p>
+      </div>
+
+      <div class="date-nav date-nav-standalone">
+        <button class="btn-icon-sm" data-datenav="treino" data-dir="-1" aria-label="Dia anterior">‹</button>
+        <button class="btn-chip" data-datenav="treino" data-dir="0">Hoje</button>
+        <button class="btn-icon-sm" data-datenav="treino" data-dir="1" aria-label="Próximo dia">›</button>
+      </div>
+
+      <div id="treinoConteudo"></div>
+    </section>
+
+    <!-- ---------- DIETA ---------- -->
+    <section class="view" id="view-dieta" hidden>
+      <div class="view-header">
+        <h1>Dieta</h1>
+        <p class="subtitle">~2.400 kcal/dia · <span id="dietaMacrosResumo"></span></p>
+      </div>
+
+      <div class="date-nav date-nav-standalone">
+        <button class="btn-icon-sm" data-datenav="dieta" data-dir="-1" aria-label="Dia anterior">‹</button>
+        <button class="btn-chip" data-datenav="dieta" data-dir="0">Hoje</button>
+        <button class="btn-icon-sm" data-datenav="dieta" data-dir="1" aria-label="Próximo dia">›</button>
+      </div>
+
+      <div id="dietaConteudo"></div>
+    </section>
+
+    <!-- ---------- EVOLUÇÃO ---------- -->
+    <section class="view" id="view-evolucao" hidden>
+      <div class="view-header">
+        <h1>Evolução</h1>
+        <p class="subtitle">Registre suas medidas periodicamente</p>
+      </div>
+
+      <div class="panel form-panel">
+        <form id="formEvolucao" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="evData">Data *</label>
+              <input type="date" id="evData" required>
+            </div>
+            <div class="field">
+              <label for="evPeso">Peso (kg)</label>
+              <input type="text" inputmode="decimal" id="evPeso" placeholder="Ex: 104,5">
+            </div>
+            <div class="field">
+              <label for="evBF">BF (%)</label>
+              <input type="text" inputmode="decimal" id="evBF" placeholder="Ex: 18,5">
+            </div>
+            <div class="field">
+              <label for="evCintura">Cintura (cm)</label>
+              <input type="text" inputmode="decimal" id="evCintura" placeholder="Ex: 98">
+            </div>
+            <div class="field">
+              <label for="evQuadril">Quadril (cm)</label>
+              <input type="text" inputmode="decimal" id="evQuadril" placeholder="Ex: 105">
+            </div>
+            <div class="field">
+              <label for="evAbdomen">Abdômen (cm)</label>
+              <input type="text" inputmode="decimal" id="evAbdomen" placeholder="Opcional">
+            </div>
+            <div class="field">
+              <label for="evPeitoral">Peitoral (cm)</label>
+              <input type="text" inputmode="decimal" id="evPeitoral" placeholder="Opcional">
+            </div>
+            <div class="field">
+              <label for="evBraco">Braço (cm)</label>
+              <input type="text" inputmode="decimal" id="evBraco" placeholder="Opcional">
+            </div>
+            <div class="field">
+              <label for="evCoxa">Coxa (cm)</label>
+              <input type="text" inputmode="decimal" id="evCoxa" placeholder="Opcional">
+            </div>
+            <div class="field">
+              <label for="evPanturrilha">Panturrilha (cm)</label>
+              <input type="text" inputmode="decimal" id="evPanturrilha" placeholder="Opcional">
+            </div>
+            <div class="field">
+              <label for="evPressao">Pressão</label>
+              <input type="text" id="evPressao" placeholder="Ex: 120/80">
+            </div>
+            <div class="field field-wide">
+              <label for="evFoto">Foto (opcional)</label>
+              <input type="file" id="evFoto" accept="image/*">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Salvar Medição</button>
+            <button type="reset" class="btn btn-ghost">Limpar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Gráfico de Peso</h2></div>
+        <div class="chart-wrap">
+          <canvas id="chartEvolucao" width="600" height="220"></canvas>
+        </div>
+        <p class="empty-state" id="chartEvolucaoVazio" hidden>Registre pelo menos duas medições para ver o gráfico.</p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Registros</h2></div>
+        <div id="listaEvolucao" class="evolucao-list"></div>
+        <p class="empty-state" id="evolucaoVazio" hidden>Nenhuma medição registrada ainda.</p>
+      </div>
+    </section>
+
+    <!-- ---------- HISTÓRICO ---------- -->
+    <section class="view" id="view-historico" hidden>
+      <div class="view-header">
+        <h1>Histórico</h1>
+        <p class="subtitle">Calendário de aderência ao protocolo</p>
+      </div>
+
+      <div class="panel">
+        <div class="cal-header">
+          <button class="btn-icon-sm" id="btnMesAnterior" aria-label="Mês anterior">‹</button>
+          <div class="cal-mes" id="calMesLabel">—</div>
+          <button class="btn-icon-sm" id="btnMesProximo" aria-label="Próximo mês">›</button>
+        </div>
+        <div class="cal-weekdays">
+          <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend">
+          <span><i class="dot dot-verde"></i> Perfeito</span>
+          <span><i class="dot dot-azul"></i> Excelente</span>
+          <span><i class="dot dot-amarelo"></i> Bom</span>
+          <span><i class="dot dot-laranja"></i> Atenção</span>
+          <span><i class="dot dot-vermelho"></i> Fora</span>
+        </div>
+      </div>
+
+      <div class="panel" id="painelDiaDetalhe" hidden>
+        <div class="panel-header"><h2 id="detalheDiaTitulo">Dia</h2></div>
+        <div id="detalheDiaConteudo"></div>
+      </div>
+    </section>
+
+    <!-- ---------- CONFIGURAÇÕES ---------- -->
+    <section class="view" id="view-config" hidden>
+      <div class="view-header">
+        <h1>Configurações</h1>
+        <p class="subtitle">Dados pessoais, protocolo, backup e tema</p>
+      </div>
+
+      <div class="panel form-panel">
+        <div class="panel-header"><h2>Dados Pessoais</h2></div>
+        <form id="formPerfil" novalidate>
+          <div class="form-grid">
+            <div class="field field-wide">
+              <label for="cfgNome">Nome</label>
+              <input type="text" id="cfgNome">
+            </div>
+            <div class="field">
+              <label for="cfgAltura">Altura (cm)</label>
+              <input type="text" inputmode="decimal" id="cfgAltura">
+            </div>
+            <div class="field">
+              <label for="cfgPeso">Peso de referência (kg)</label>
+              <input type="text" inputmode="decimal" id="cfgPeso">
+            </div>
+            <div class="field">
+              <label for="cfgMetaAgua">Meta de água (litros)</label>
+              <input type="text" inputmode="decimal" id="cfgMetaAgua">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Salvar Dados</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Tema</h2></div>
+        <div class="seg-btns" id="temaSeletor">
+          <button class="btn btn-seg" data-theme="auto">Automático</button>
+          <button class="btn btn-seg" data-theme="light">Claro</button>
+          <button class="btn btn-seg" data-theme="dark">Escuro</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header panel-header-actions">
+          <h2>Refeições do Protocolo</h2>
+          <button class="btn btn-secondary btn-sm" id="btnAddRefeicao">+ Refeição</button>
+        </div>
+        <div id="listaRefeicoesCfg"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Treino Semanal</h2></div>
+        <div id="listaTreinoCfg"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Suplementação</h2></div>
+        <div class="form-actions">
+          <button class="btn btn-secondary btn-sm" id="btnAddSuplemento">+ Suplemento</button>
+        </div>
+        <div id="listaSuplementosCfg"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header"><h2>Backup e Exportação</h2></div>
+        <p class="muted small" id="backupAvisoInfo"></p>
+        <div class="form-actions form-actions-col">
+          <button class="btn btn-primary btn-block" id="btnExportarBackup">Exportar backup (.json)</button>
+          <input type="file" id="inputImportarBackup" accept="application/json" hidden>
+          <button class="btn btn-secondary btn-block" id="btnImportarBackup">Importar backup (.json)</button>
+          <button class="btn btn-secondary btn-block" id="btnExportarCSV">Exportar histórico (.csv)</button>
+        </div>
+      </div>
+
+      <div class="panel panel-danger">
+        <div class="panel-header"><h2>Zona de Perigo</h2></div>
+        <p class="muted small">Apagar todos os dados é irreversível. Faça um backup antes.</p>
+        <div class="form-actions">
+          <button class="btn btn-danger" id="btnApagarTudo">Apagar todos os dados</button>
+        </div>
+      </div>
+
+      <p class="app-version">Projeto Shape de Pai · v1.0</p>
+    </section>
+
+  </main>
+
+  <!-- ===================== MENU INFERIOR ===================== -->
+  <nav class="tabbar" id="tabbar">
+    <button class="tab-item active" data-view="hoje">
+      <svg viewBox="0 0 24 24"><path d="M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6V11h-6v9zm0-16v5h6V4h-6z" fill="currentColor"/></svg>
+      <span>Hoje</span>
+    </button>
+    <button class="tab-item" data-view="treino">
+      <svg viewBox="0 0 24 24"><path d="M2 12h2m2-4v8m2-6v4m10-4v4m2-6v8m2-4h2M8 12h8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <span>Treino</span>
+    </button>
+    <button class="tab-item" data-view="dieta">
+      <svg viewBox="0 0 24 24"><path d="M6 3v8a3 3 0 003 3v7M6 3v6M9 3v6M12 3v8M18 3c-2 0-3 2-3 5s1 4 3 5v8" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Dieta</span>
+    </button>
+    <button class="tab-item" data-view="evolucao">
+      <svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M7 15l4-4 3 3 5-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Evolução</span>
+    </button>
+    <button class="tab-item" data-view="historico">
+      <svg viewBox="0 0 24 24"><path d="M4 5h16M6 5v15h12V5M9 2v4M15 2v4M4 10h16" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+      <span>Histórico</span>
+    </button>
+    <button class="tab-item" data-view="config">
+      <svg viewBox="0 0 24 24"><path d="M12 9a3 3 0 100 6 3 3 0 000-6zm8.4 3a7.6 7.6 0 00-.14-1.4l2-1.55-2-3.46-2.36.95a7.6 7.6 0 00-2.4-1.4L15 2.6h-4l-.5 2.54a7.6 7.6 0 00-2.4 1.4l-2.36-.95-2 3.46 2 1.55A7.6 7.6 0 003.6 12c0 .47.05.95.14 1.4l-2 1.55 2 3.46 2.36-.95c.7.6 1.5 1.08 2.4 1.4L9 21.4h4l.5-2.54c.9-.32 1.7-.8 2.4-1.4l2.36.95 2-3.46-2-1.55c.09-.45.14-.93.14-1.4z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/></svg>
+      <span>Ajustes</span>
+    </button>
+  </nav>
+
+</div>
+
+<!-- ===================== MODAL GENÉRICO (confirmação) ===================== -->
+<div class="modal-overlay" id="modalConfirm" hidden>
+  <div class="modal modal-small">
+    <div class="modal-header">
+      <h2 id="confirmTitulo">Confirmar ação</h2>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMensagem"></p>
+      <input type="text" id="confirmInputTexto" class="confirm-input" hidden placeholder="Digite aqui">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="confirmCancelar">Cancelar</button>
+      <button class="btn btn-danger" id="confirmOk">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL FORM (refeição / exercício / suplemento) ===================== -->
+<div class="modal-overlay" id="modalForm" hidden>
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalFormTitulo">Editar</h2>
+      <button class="btn-icon" id="btnFecharModalForm" aria-label="Fechar">
+        <svg viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalFormCorpo"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="btnModalFormCancelar">Cancelar</button>
+      <button class="btn btn-primary" id="btnModalFormSalvar">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div class="toast" id="toast" hidden></div>
+
+<script src="script.js"></script>
+</body>
+</html>
