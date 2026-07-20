@@ -12,12 +12,23 @@ sem internet (depois de instalado) e sem enviar seus dados a lugar nenhum.
 Feito com HTML, CSS e JavaScript puro — sem frameworks, sem build.
 
 
+ENDEREÇO DO APP
+------------------
+https://mariossma2017.github.io/shape-tracker-x7f2/
+
+O app está publicado no GitHub Pages (repositório público, mas com nome
+genérico, sem seu nome completo nele) a partir da pasta local
+"Projeto Shape de Pai" no OneDrive. Sempre que você editar os arquivos
+localmente e quiser atualizar o site, é só pedir para eu publicar de novo
+(git push) — o GitHub Pages atualiza sozinho em menos de um minuto.
+
+
 COMO INSTALAR NO IPHONE (recomendado)
 --------------------------------------
 O app deve ser instalado usando o SAFARI (não use o Chrome no iPhone
 para este passo, o botão de instalação não aparece do mesmo jeito).
 
-1. Abra o endereço do aplicativo no Safari.
+1. Abra o endereço acima (https://mariossma2017.github.io/shape-tracker-x7f2/) no Safari.
 2. Toque no botão Compartilhar (o quadrado com uma seta para cima),
    na barra inferior do Safari.
 3. Role as opções e toque em "Adicionar à Tela de Início".
