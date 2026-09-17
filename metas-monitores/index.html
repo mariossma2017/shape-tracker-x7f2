@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metas dos Monitores | Lemar</title>
+  <meta name="description" content="Painel de acompanhamento de metas e remuneração dos monitores.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231b1b1b'/%3E%3Cpath d='M14 15h12v26h24v10H14z' fill='%23f4c400'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar no-print">
+    <div class="brand"><img class="brand-logo" src="assets/logo-ssma.png" alt="Logo SSMA"><div><strong>LEMAR</strong><small>Metas dos Monitores • SSMA</small></div></div>
+    <div class="toolbar">
+      <label class="month-control"><span>Competência</span><input id="monthInput" type="month"></label>
+      <button class="btn secondary" id="exportJsonBtn">Exportar backup</button>
+      <label class="btn secondary file-btn">Importar backup<input id="importJsonInput" type="file" accept="application/json"></label>
+      <button class="btn primary" id="addMonitorBtn">+ Monitor</button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar no-print">
+      <button class="nav-item general active" data-view="general"><span class="nav-icon">◆</span><span><strong>Visão do setor</strong><small>Relatório sem nomes</small></span></button>
+      <div class="side-label">MONITORES</div>
+      <div id="monitorNav"></div>
+      <div class="privacy-note"><strong>Dados protegidos</strong><span>As informações ficam salvas apenas neste navegador. Exporte o JSON como backup.</span></div>
+    </aside>
+
+    <main id="mainContent"></main>
+  </div>
+
+  <dialog id="monitorDialog">
+    <form method="dialog" id="monitorForm">
+      <div class="dialog-head"><div><small>NOVO CADASTRO</small><h2>Adicionar monitor</h2></div><button value="cancel" class="icon-btn" aria-label="Fechar">×</button></div>
+      <label>Nome completo<input id="monitorName" required autocomplete="off" placeholder="Digite o nome"></label>
+      <div class="dialog-actions"><button value="cancel" class="btn secondary">Cancelar</button><button value="default" class="btn primary" id="saveMonitorBtn">Salvar monitor</button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
