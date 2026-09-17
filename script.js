@@ -13,11 +13,15 @@ const LS = {
   ultimaCarga: 'psp_ultima_carga',
   evolucao: 'psp_evolucao',
   backupMeta: 'psp_backup_meta',
+  hormonal: 'psp_hormonal',
+  appVersion: 'psp_app_version',
 };
+
+const APP_VERSION = 3;
 
 const DIAS_SEMANA_NOME = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 const DIAS_SEMANA_KEY = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
-const CARDIO_INFO = 'Cardio em jejum ou após o treino, 6x na semana · 40–45min caminhada moderada (velocidade 7 ou inclinação 10 com velocidade 5) · horário habitual 06:00–06:45.';
+const CARDIO_INFO = 'AEJ todos os dias. Segunda, terça, quarta, sexta e sábado: 40min. Quinta e domingo: 60min. Não ultrapassar 120 bpm.';
 
 /* ===================== DADOS INICIAIS (SEED) — protocolo real ===================== */
 function seedConfig() {
@@ -25,7 +29,7 @@ function seedConfig() {
     nome: 'Mario Viana',
     altura: 180,
     pesoRef: 105,
-    metaAgua: 5,
+    metaAgua: 6,
     tema: 'auto',
     dataInicio: '2026-07-20',
   };
@@ -33,27 +37,12 @@ function seedConfig() {
 
 function seedDieta() {
   return [
-    { id: 'r1', ordem: 1, nome: 'Refeição 1 · Pós-jejum / Café da manhã', horario: '07:15',
-      itens: ['4 ovos inteiros (mexidos ou cozidos)', '1 fatia de pão de forma integral', '100g de morango ou melancia'],
-      kcal: 352, proteina: 26, carbo: 17, gordura: 20 },
-    { id: 'r2', ordem: 2, nome: 'Refeição 2 · Lanche da manhã', horario: '10:30',
-      itens: ['30g de whey protein', '20g de castanha de caju ou pará'],
-      kcal: 234, proteina: 27, carbo: 9, gordura: 10 },
-    { id: 'r3', ordem: 3, nome: 'Refeição 3 · Almoço', horario: '13:30',
-      itens: ['200g de peito de frango grelhado', '100g de arroz branco cozido', 'Salada de folhas verdes à vontade', '1 colher de sopa (12ml) de azeite de oliva extra virgem'],
-      kcal: 513, proteina: 62, carbo: 28, gordura: 17 },
-    { id: 'r4', ordem: 4, nome: 'Refeição 4 · Lanche da tarde', horario: '16:30',
-      itens: ['150g de iogurte desnatado natural', '30g de whey protein', '15g de aveia em flocos'],
-      kcal: 235, proteina: 32, carbo: 20, gordura: 3 },
-    { id: 'r5', ordem: 5, nome: 'Refeição 5 · Pré-treino', horario: '18:30',
-      itens: ['150g de arroz branco cozido', '150g de patinho moído'],
-      kcal: 411, proteina: 45, carbo: 42, gordura: 7 },
-    { id: 'r6', ordem: 6, nome: 'Refeição 6 · Pós-treino', horario: '21:30',
-      itens: ['200g de peito de frango grelhado', '150g de arroz branco cozido', 'Vegetais cozidos à vontade'],
-      kcal: 461, proteina: 62, carbo: 42, gordura: 5 },
-    { id: 'r7', ordem: 7, nome: 'Ceia · Antes de dormir', horario: '23:00',
-      itens: ['35g de whey protein', '100g de abacate'],
-      kcal: 209, proteina: 26, carbo: 6, gordura: 9 },
+    { id: 'r1', ordem: 1, nome: 'Café da manhã pós-AEJ', horario: 'Pós-AEJ', itens: ['1 pão francês', '2 claras + 1 gema', '20g de requeijão cremoso light', 'Café preto sem açúcar (adoçante e leite desnatado opcionais)'], kcal: null, proteina: null, carbo: null, gordura: null },
+    { id: 'r2', ordem: 2, nome: 'Lanche da manhã', horario: 'Manhã', itens: ['100g de frutas: banana, mamão, maçã ou morango', '30g de whey protein concentrado'], kcal: null, proteina: null, carbo: null, gordura: null },
+    { id: 'r3', ordem: 3, nome: 'Almoço', horario: 'Almoço', itens: ['180g de arroz cozido OU macarrão cozido com molho de tomate natural', '130g de peito de frango OU 110g de carne magra', '100g de mix de legumes', 'Salada verde opcional (folhas)'], kcal: null, proteina: null, carbo: null, gordura: null },
+    { id: 'r4', ordem: 4, nome: 'Lanche da tarde', horario: 'Tarde', itens: ['200g de mix de frutas', '1 iogurte desnatado (160ml)', '20g de whey protein'], kcal: null, proteina: null, carbo: null, gordura: null },
+    { id: 'r5', ordem: 5, nome: 'Pré-treino', horario: 'Pré-treino', itens: ['1 pão francês', '30g de doce de leite'], kcal: null, proteina: null, carbo: null, gordura: null },
+    { id: 'r6', ordem: 6, nome: 'Pós-treino', horario: 'Pós-treino', itens: ['120g de frango OU 100g de carne magra', '150g de arroz cozido', '120g de abacaxi'], kcal: null, proteina: null, carbo: null, gordura: null },
   ];
 }
 
@@ -65,32 +54,22 @@ function descansoAtivo() {
 }
 
 function ex(nome, series, reps) { return { id: uid(), nome, series, reps }; }
+function exP(nome, protocolo) { return { id: uid(), nome, series: null, reps: null, protocolo }; }
 
 function seedTreino() {
   return {
-    dom: descansoAtivo(),
-    seg: { nome: 'Push', tipo: 'treino', descricao: 'Peitoral, ombro e tríceps com foco em força e densidade.', exercicios: [
-      ex('Supino inclinado máquina', 4, 10), ex('Supino reto máquina', 4, 10), ex('Crucifixo máquina', 3, 15),
-      ex('Desenvolvimento máquina', 4, 10), ex('Elevação lateral', 4, 15), ex('Tríceps corda', 4, 12), ex('Tríceps francês', 3, 12),
-    ] },
-    ter: { nome: 'Pull', tipo: 'treino', descricao: 'Costas, dorsal e bíceps com foco em volume e postura.', exercicios: [
-      ex('Puxada frontal', 4, 10), ex('Remada baixa', 4, 10), ex('Remada articulada', 4, 12),
-      ex('Pulldown', 3, 15), ex('Encolhimento', 4, 12), ex('Rosca direta', 4, 12), ex('Rosca martelo', 3, 12),
-    ] },
-    qua: { nome: 'Legs', tipo: 'treino', descricao: 'Grande gasto calórico e fortalecimento de pernas.', exercicios: [
-      ex('Agachamento guiado', 4, 10), ex('Leg press', 4, 15), ex('Afundo máquina', 3, 12),
-      ex('Mesa flexora', 4, 12), ex('Cadeira extensora', 4, 15), ex('Panturrilha sentado', 5, 15),
-    ] },
-    qui: descansoAtivo(),
-    sex: { nome: 'Full Upper', tipo: 'treino', descricao: 'Aumento de gasto calórico, força e densidade geral.', exercicios: [
-      ex('Supino inclinado', 4, 10), ex('Puxada frontal', 4, 10), ex('Remada articulada', 4, 12),
-      ex('Desenvolvimento máquina', 4, 10), ex('Elevação lateral', 4, 15), ex('Rosca direta', 3, 12), ex('Tríceps corda', 3, 12),
-    ] },
-    sab: { nome: 'Full Lower', tipo: 'treino', descricao: 'Foco metabólico, posterior e condicionamento.', exercicios: [
-      ex('Stiff', 4, 10), ex('Mesa flexora', 4, 12), ex('Leg press', 4, 20),
-      ex('Passada', 3, 12), ex('Extensora', 3, 20), ex('Panturrilha em pé', 5, 15),
-    ] },
+    dom: { nome: 'Descanso de treino', tipo: 'descanso', exercicios: [], extra: ['AEJ: 60 minutos, sem ultrapassar 120 bpm'] },
+    seg: treinoOmbroPeito(),
+    ter: { nome: 'Perna completa', tipo: 'treino', descricao: 'Descanso: 40s em série normal e 50s em bi-série.', exercicios: [exP('Agachamento smith','1x20 + 2x15'),exP('Cadeira extensora','4x15'),exP('Afundo no smith','4x15'),exP('Stiff com halter','3x15'),exP('Mesa flexora','4x15'),exP('Panturrilha leg 45 + em pé','4x10 + 10')] },
+    qua: { nome: 'Ombro completo', tipo: 'treino', descricao: 'Descanso: 40s em série normal e 50s em bi-série.', exercicios: [exP('Flexão de solo','2x15'),exP('Elevação unilateral no cross','3x15'),exP('Elevação bilateral com halter','4x12'),exP('Elevação frontal com barra - pegada supinada','4x12'),exP('Remada alta no cross com barra','4x12'),exP('Desenvolvimento semiolímpico','4x10'),exP('Face pull','4x12'),exP('Crucifixo invertido com halter','4x12')] },
+    qui: { nome: 'Descanso de treino', tipo: 'descanso', exercicios: [], extra: ['AEJ: 60 minutos, sem ultrapassar 120 bpm'] },
+    sex: treinoOmbroPeito(),
+    sab: { nome: 'Costas + bíceps + tríceps + abdômen', tipo: 'treino', descricao: 'Descanso: 40s em série normal e 50s em bi-série.', exercicios: [exP('Puxador aberto','1x20 + 4x12'),exP('Remada baixa unilateral no cross','4x10'),exP('Rosca direta com barra','1x20 + 3x10'),exP('Rosca alternada com halter','4x12'),exP('Tríceps corda','4x12'),exP('Tríceps testa','3x12'),exP('Abdominal infra unilateral','3x15'),exP('Abdominal infra','4x15'),exP('Prancha isométrica','3x1min')] },
   };
+}
+
+function treinoOmbroPeito() {
+  return { nome: 'Ombro + peito', tipo: 'treino', descricao: 'Descanso: 40s em série normal e 50s em bi-série.', exercicios: [exP('Cross alto','1x20 + 3x12'),exP('Voador peitoral','1x15 + 3x10'),exP('Supino inclinado com barra','1x20 + 3x10'),exP('Crucifixo inclinado com halter','4x12'),exP('Desenvolvimento com halter','4x12'),exP('Elevação lateral com halter','3x12'),exP('Elevação frontal com corda no cross','3x12'),exP('Elevação unilateral frontal no cross','3x15')] };
 }
 
 const ABDOMINAIS = [
@@ -101,17 +80,35 @@ const ABDOMINAIS = [
 
 function seedSuplementos() {
   return [
-    { id: 'nac', nome: 'NAC (N-Acetilcisteína)', dose: '600mg', momento: 'Ao acordar, em jejum' },
-    { id: 'omega3', nome: 'Ômega 3 (alto EPA/DHA)', dose: '2g', momento: 'Junto com o almoço' },
-    { id: 'coq10', nome: 'Coenzima Q10', dose: '100mg', momento: 'Junto com o almoço' },
-    { id: 'melatonina', nome: 'Melatonina', dose: '3mg', momento: '30 min antes de dormir' },
+    { id: 'agua_pre_aej', nome: 'Água pré-AEJ', dose: '500ml', momento: 'Antes do AEJ' },
+    { id: 'ioimbina', nome: 'Ioimbina', dose: '10mg', momento: 'Pré-AEJ' },
+    { id: 'cafeina_aej', nome: 'Cafeína', dose: '200mg', momento: 'Pré-AEJ' },
+    { id: 'vitc_multi', nome: 'Vitamina C + multivitamínico', dose: '1g + 1 cápsula', momento: 'Na primeira refeição' },
+    { id: 'morosil', nome: 'Morosil', dose: '500mg', momento: 'Na primeira refeição' },
+    { id: 'omega3', nome: 'Ômega 3', dose: '3 cápsulas', momento: 'Antes de dormir' },
+    { id: 'nac', nome: 'NAC', dose: '600mg', momento: 'Antes de dormir' },
+    { id: 'melatonina', nome: 'Melatonina', dose: '5mg', momento: 'Antes de dormir' },
+    { id: 'intra_agua', nome: 'Água intra-treino', dose: '1 litro', momento: 'Durante o treino' },
+    { id: 'creatina', nome: 'Creatina', dose: '8g', momento: 'Intra-treino' },
+    { id: 'eaas', nome: 'EAAs 9', dose: '7g', momento: 'Intra-treino' },
+    { id: 'sal', nome: 'Sal', dose: '1g', momento: 'Intra-treino' },
   ];
 }
 
 function seedEvolucao() {
-  return [
-    { id: uid(), data: '2026-07-20', peso: 105, bf: null, cintura: 99, quadril: 106, abdomen: null, peitoral: null, braco: null, coxa: null, panturrilha: null, pressao: '', foto: null },
-  ];
+  return [];
+}
+
+function seedHormonal() {
+  return {
+    concentracoes: { enantato: null, masteron: null },
+    laboratorio: '', lote: '', validade: '',
+    agenda: {
+      seg: [{ nome: 'Enantato', ml: 1 }, { nome: 'Masteron', ml: 1 }],
+      qui: [{ nome: 'Enantato', ml: 1 }, { nome: 'Masteron', ml: 0.5 }],
+      sab: [{ nome: 'Masteron', ml: 1 }],
+    },
+  };
 }
 
 /* ===================== HELPERS ===================== */
@@ -183,7 +180,20 @@ function saveJSON(key, value) { localStorage.setItem(key, JSON.stringify(value))
 let DB = {};
 
 function initData() {
+  const versaoAnterior = Number(localStorage.getItem(LS.appVersion) || 1);
+  if (versaoAnterior < APP_VERSION) {
+    // Nova fase solicitada: remove somente o histórico pessoal uma única vez.
+    localStorage.removeItem(LS.registros);
+    localStorage.removeItem(LS.ultimaCarga);
+    localStorage.removeItem(LS.evolucao);
+    localStorage.removeItem(LS.backupMeta);
+    localStorage.removeItem(LS.dieta);
+    localStorage.removeItem(LS.treino);
+    localStorage.removeItem(LS.suplementos);
+    localStorage.setItem(LS.appVersion, String(APP_VERSION));
+  }
   DB.config = loadJSON(LS.config, null) || seedConfig();
+  if (versaoAnterior < APP_VERSION) DB.config.metaAgua = 6;
   DB.dieta = loadJSON(LS.dieta, null) || seedDieta();
   DB.treino = loadJSON(LS.treino, null) || seedTreino();
   DB.suplementos = loadJSON(LS.suplementos, null) || seedSuplementos();
@@ -191,6 +201,7 @@ function initData() {
   DB.ultimaCarga = loadJSON(LS.ultimaCarga, null) || {};
   DB.evolucao = loadJSON(LS.evolucao, null) || seedEvolucao();
   DB.backupMeta = loadJSON(LS.backupMeta, null) || { ultimoBackup: null };
+  DB.hormonal = loadJSON(LS.hormonal, null) || seedHormonal();
   persistAll();
 }
 function persistAll() {
@@ -202,11 +213,13 @@ function persistAll() {
   saveJSON(LS.ultimaCarga, DB.ultimaCarga);
   saveJSON(LS.evolucao, DB.evolucao);
   saveJSON(LS.backupMeta, DB.backupMeta);
+  saveJSON(LS.hormonal, DB.hormonal);
+  localStorage.setItem(LS.appVersion, String(APP_VERSION));
 }
 
 function getRegistro(iso) {
   if (!DB.registros[iso]) {
-    DB.registros[iso] = { dieta: {}, treino: {}, abdominais: {}, cardio: null, agua: 0, aguaHistorico: [], suplementos: {} };
+    DB.registros[iso] = { dieta: {}, treino: {}, abdominais: {}, cardio: null, agua: 0, aguaHistorico: [], suplementos: {}, hormonal: null };
   }
   const r = DB.registros[iso];
   if (!r.dieta) r.dieta = {};
@@ -215,6 +228,7 @@ function getRegistro(iso) {
   if (r.agua === undefined) r.agua = 0;
   if (!r.aguaHistorico) r.aguaHistorico = [];
   if (!r.suplementos) r.suplementos = {};
+  if (r.hormonal === undefined) r.hormonal = null;
   return r;
 }
 function saveRegistro(iso) { saveJSON(LS.registros, DB.registros); }
@@ -264,13 +278,16 @@ function calcularAderencia(iso) {
   DB.suplementos.forEach(s => { if (reg.suplementos[s.id]) supFeitos += 1; });
   const supPct = (supFeitos / totalSup) * 100;
 
-  const score = Math.round(dietaPct * 0.40 + treinoPct * 0.25 + cardioPct * 0.15 + aguaPct * 0.10 + supPct * 0.10);
+  const agendaHormonal = DB.hormonal.agenda[diaKey] || [];
+  const hormonalPct = agendaHormonal.length ? (reg.hormonal && reg.hormonal.status === 'aplicado' ? 100 : 0) : null;
+  const scoreBase = dietaPct * 0.40 + treinoPct * 0.25 + cardioPct * 0.15 + aguaPct * 0.10 + supPct * 0.10;
+  const score = Math.round(hormonalPct === null ? scoreBase : scoreBase * 0.90 + hormonalPct * 0.10);
 
-  return { score, dietaPct, treinoPct, cardioPct, aguaPct, supPct };
+  return { score, dietaPct, treinoPct, cardioPct, aguaPct, supPct, hormonalPct };
 }
 
 /* ===================== NAVEGAÇÃO ===================== */
-const TITULOS_VIEW = { hoje: 'Hoje', treino: 'Treino', dieta: 'Dieta', evolucao: 'Evolução', historico: 'Histórico', config: 'Ajustes' };
+const TITULOS_VIEW = { hoje: 'Hoje', treino: 'Treino', dieta: 'Dieta', protocolo: 'Protocolo', evolucao: 'Evolução', historico: 'Histórico', config: 'Ajustes' };
 
 function switchView(view) {
   state.view = view;
@@ -285,6 +302,7 @@ function renderView(view) {
   if (view === 'hoje') renderHoje();
   else if (view === 'treino') renderTreino();
   else if (view === 'dieta') renderDieta();
+  else if (view === 'protocolo') renderProtocolo();
   else if (view === 'evolucao') renderEvolucao();
   else if (view === 'historico') renderHistorico();
   else if (view === 'config') renderConfig();
@@ -334,6 +352,7 @@ function renderHoje() {
     { nome: 'Água', pct: ad.aguaPct },
     { nome: 'Suplementação', pct: ad.supPct },
   ];
+  if (ad.hormonalPct !== null) cats.push({ nome: 'Hormônios ☠️', pct: ad.hormonalPct });
   document.getElementById('catGrid').innerHTML = cats.map(c => `
     <div class="cat-card">
       <div class="cat-card-top">
@@ -347,6 +366,7 @@ function renderHoje() {
   renderAgua(iso);
   renderCardio(iso);
   renderSuplementosHoje(iso);
+  renderHormonalHoje(iso);
 }
 
 function renderPendentes(iso) {
@@ -380,6 +400,11 @@ function renderPendentes(iso) {
   DB.suplementos.forEach(s => {
     if (!reg.suplementos[s.id]) itens.push({ label: `Suplemento: ${s.nome}`, tempo: s.momento, acao: () => document.getElementById('cardSuplementos').scrollIntoView({ behavior: 'smooth', block: 'center' }) });
   });
+
+  const agendaHormonal = DB.hormonal.agenda[diaKey] || [];
+  if (agendaHormonal.length && (!reg.hormonal || reg.hormonal.status !== 'aplicado')) {
+    itens.push({ label: 'Protocolo hormonal', tempo: agendaHormonal.map(a => `${formatNum(a.ml, 1)}ml ${a.nome}`).join(' + '), acao: () => switchView('protocolo') });
+  }
 
   const el = document.getElementById('listaPendentes');
   const vazio = document.getElementById('pendentesVazio');
@@ -441,6 +466,84 @@ function renderSuplementosHoje(iso) {
   });
 }
 
+/* ===================== PROTOCOLO HORMONAL ===================== */
+function agendaHormonalDoDia(iso) {
+  return DB.hormonal.agenda[weekdayKey(iso)] || [];
+}
+
+function resumoDoseHormonal(itens) {
+  return itens.map(item => {
+    const chave = item.nome.toLowerCase();
+    const conc = DB.hormonal.concentracoes[chave];
+    const mg = conc ? ` · ${formatNum(item.ml * conc, 0)}mg` : '';
+    return `${formatNum(item.ml, 1)}ml ${item.nome}${mg}`;
+  }).join(' + ');
+}
+
+function renderHormonalHoje(iso) {
+  const el = document.getElementById('hormonalHojeConteudo');
+  const agenda = agendaHormonalDoDia(iso);
+  const reg = getRegistro(iso);
+  if (!agenda.length) {
+    el.innerHTML = `<p class="hormone-off">Hoje não há aplicação programada. Próxima aplicação conforme agenda semanal.</p>`;
+    return;
+  }
+  const status = reg.hormonal && reg.hormonal.status;
+  el.innerHTML = `
+    <div class="hormone-dose">${escapeHtml(resumoDoseHormonal(agenda))}</div>
+    <div class="hormone-status ${status || 'pendente'}">${status === 'aplicado' ? '✓ Aplicado' : status === 'adiado' ? '⏱ Adiado' : status === 'nao' ? '✕ Não aplicado' : '● Pendente'}</div>`;
+}
+
+function renderProtocolo() {
+  const agenda = DB.hormonal.agenda;
+  const totalEnantato = Object.values(agenda).flat().filter(x => x.nome === 'Enantato').reduce((s, x) => s + x.ml, 0);
+  const totalMasteron = Object.values(agenda).flat().filter(x => x.nome === 'Masteron').reduce((s, x) => s + x.ml, 0);
+  const concE = DB.hormonal.concentracoes.enantato;
+  const concM = DB.hormonal.concentracoes.masteron;
+  document.getElementById('protocoloResumo').innerHTML = `
+    <div class="protocol-stat"><span>Enantato</span><strong>${formatNum(totalEnantato, 1)}ml</strong><small>${concE ? formatNum(totalEnantato * concE, 0) + 'mg/sem' : 'por semana'}</small></div>
+    <div class="protocol-stat"><span>Masteron</span><strong>${formatNum(totalMasteron, 1)}ml</strong><small>${concM ? formatNum(totalMasteron * concM, 0) + 'mg/sem' : 'por semana'}</small></div>
+    <div class="protocol-stat"><span>Total</span><strong>${formatNum(totalEnantato + totalMasteron, 1)}ml</strong><small>3 aplicações</small></div>`;
+  const dias = [{ key: 'seg', nome: 'Segunda' }, { key: 'qui', nome: 'Quinta' }, { key: 'sab', nome: 'Sábado' }];
+  document.getElementById('protocoloAgenda').innerHTML = dias.map(d => `<div class="agenda-row"><strong>${d.nome}</strong><span>${escapeHtml(resumoDoseHormonal(agenda[d.key]))}</span><b>${formatNum(agenda[d.key].reduce((s,x)=>s+x.ml,0),1)}ml</b></div>`).join('');
+  renderProtocoloDia();
+}
+
+function renderProtocoloDia() {
+  const iso = state.viewDate;
+  const agenda = agendaHormonalDoDia(iso);
+  const reg = getRegistro(iso);
+  const el = document.getElementById('protocoloDia');
+  if (!agenda.length) {
+    el.innerHTML = `<div class="protocol-empty"><strong>${weekdayNome(iso)} · ${formatDataBR(iso)}</strong><p>Sem aplicação programada.</p></div>`;
+    return;
+  }
+  const h = reg.hormonal || {};
+  el.innerHTML = `
+    <div class="application-card">
+      <div class="application-date">${weekdayNome(iso)} · ${formatDataBR(iso)}</div>
+      <div class="application-dose">${escapeHtml(resumoDoseHormonal(agenda))}</div>
+      <div class="seg-btns hormone-actions">
+        <button class="btn btn-seg ${h.status === 'aplicado' ? 'is-active tone-green' : ''}" data-hstatus="aplicado">Aplicado</button>
+        <button class="btn btn-seg ${h.status === 'adiado' ? 'is-active' : ''}" data-hstatus="adiado">Adiado</button>
+        <button class="btn btn-seg ${h.status === 'nao' ? 'is-active tone-red' : ''}" data-hstatus="nao">Não aplicado</button>
+      </div>
+      <div class="form-grid hormone-form">
+        <div class="field"><label>Local</label><select id="hLocal"><option value="">Selecionar</option><option>Glúteo</option><option>Vasto lateral</option><option>Deltoide</option><option>Outro</option></select></div>
+        <div class="field"><label>Lado</label><select id="hLado"><option value="">Selecionar</option><option>Esquerdo</option><option>Direito</option></select></div>
+        <div class="field field-wide"><label>Observação</label><input id="hObs" value="${escapeHtml(h.observacao || '')}" placeholder="Opcional"></div>
+      </div>
+      ${h.confirmadoEm ? `<p class="application-confirmed">Registrado em ${new Date(h.confirmadoEm).toLocaleString('pt-BR')}</p>` : ''}
+    </div>`;
+  document.getElementById('hLocal').value = h.local || '';
+  document.getElementById('hLado').value = h.lado || '';
+  el.querySelectorAll('[data-hstatus]').forEach(btn => btn.addEventListener('click', () => {
+    const r = getRegistro(iso);
+    r.hormonal = { status: btn.dataset.hstatus, local: document.getElementById('hLocal').value, lado: document.getElementById('hLado').value, observacao: document.getElementById('hObs').value.trim(), confirmadoEm: new Date().toISOString() };
+    saveRegistro(iso); renderProtocolo(); renderHormonalHoje(iso); showToast('Aplicação registrada');
+  }));
+}
+
 /* ===================== TELA TREINO ===================== */
 function renderTreino() {
   const iso = state.viewDate;
@@ -471,7 +574,7 @@ function renderTreino() {
       <div class="exercicio-top">
         <div>
           <div class="exercicio-nome">${escapeHtml(e.nome)}</div>
-          <div class="exercicio-meta">${e.series} séries x ${e.reps} repetições</div>
+          <div class="exercicio-meta">${escapeHtml(e.protocolo || `${e.series} séries x ${e.reps} repetições`)}</div>
           ${ultima ? `<div class="exercicio-ultima">Última carga: ${formatNum(ultima.carga, 1)}kg</div>` : ''}
         </div>
         <button class="btn-concluir ${dado.concluido ? 'is-on' : ''}" data-ex-concluir="${e.id}">${dado.concluido ? 'Concluído ✓' : 'Concluir'}</button>
@@ -479,21 +582,6 @@ function renderTreino() {
       <div class="exercicio-row">
         <input class="exercicio-input" type="text" inputmode="decimal" placeholder="Carga (kg)" data-ex-carga="${e.id}" value="${cargaVal === '' ? '' : formatNum(cargaVal, 1)}">
         <input class="exercicio-input" type="number" inputmode="numeric" placeholder="Reps feitas" data-ex-reps="${e.id}" value="${repsVal === '' ? '' : repsVal}">
-      </div>
-    </div>`;
-  }).join('');
-
-  html += `<div class="treino-dia-titulo">Abdominais (opcional · 2x por semana)</div>`;
-  html += ABDOMINAIS.map(a => {
-    const done = reg.abdominais[a.id];
-    return `
-    <div class="exercicio-card">
-      <div class="exercicio-top">
-        <div>
-          <div class="exercicio-nome">${escapeHtml(a.nome)}</div>
-          <div class="exercicio-meta">${escapeHtml(a.meta)}</div>
-        </div>
-        <button class="btn-concluir ${done ? 'is-on' : ''}" data-abd-concluir="${a.id}">${done ? 'Feito ✓' : 'Concluir'}</button>
       </div>
     </div>`;
   }).join('');
@@ -509,15 +597,6 @@ function renderTreino() {
       saveRegistro(iso);
       renderTreino();
       if (state.view === 'hoje') renderHoje();
-    });
-  });
-  el.querySelectorAll('[data-abd-concluir]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.abdConcluir;
-      const r = getRegistro(iso);
-      r.abdominais[id] = !r.abdominais[id];
-      saveRegistro(iso);
-      renderTreino();
     });
   });
   el.querySelectorAll('[data-ex-carga]').forEach(inp => {
@@ -554,7 +633,7 @@ function renderDieta() {
   const totalP = DB.dieta.reduce((s, r) => s + (r.proteina || 0), 0);
   const totalC = DB.dieta.reduce((s, r) => s + (r.carbo || 0), 0);
   const totalG = DB.dieta.reduce((s, r) => s + (r.gordura || 0), 0);
-  document.querySelector('#view-dieta .subtitle').innerHTML = `~${totalKcal} kcal/dia · P ${totalP}g · C ${totalC}g · G ${totalG}g`;
+  document.querySelector('#view-dieta .subtitle').textContent = totalKcal ? `~${totalKcal} kcal/dia · P ${totalP}g · C ${totalC}g · G ${totalG}g` : 'Plano alimentar Fase 1 · quantidades conforme protocolo';
 
   const el = document.getElementById('dietaConteudo');
   el.innerHTML = DB.dieta.slice().sort((a, b) => a.ordem - b.ordem).map(r => {
@@ -566,7 +645,7 @@ function renderDieta() {
         <div class="refeicao-horario">${escapeHtml(r.horario)}</div>
       </div>
       <div class="refeicao-itens">${r.itens.map(i => '• ' + escapeHtml(i)).join('<br>')}</div>
-      <div class="refeicao-macros">~${r.kcal} kcal · Proteínas ${r.proteina}g · Carboidratos ${r.carbo}g · Gorduras ${r.gordura}g</div>
+      ${r.kcal ? `<div class="refeicao-macros">~${r.kcal} kcal · Proteínas ${r.proteina}g · Carboidratos ${r.carbo}g · Gorduras ${r.gordura}g</div>` : ''}
       <div class="seg-btns">
         <button class="btn btn-seg ${dado.status === 'conforme' ? 'is-active tone-green' : ''}" data-dieta="${r.id}" data-status="conforme">✅ Conforme</button>
         <button class="btn btn-seg ${dado.status === 'parcial' ? 'is-active' : ''}" data-dieta="${r.id}" data-status="parcial">🟨 Parcial</button>
@@ -826,6 +905,11 @@ function renderConfig() {
   document.getElementById('cfgAltura').value = DB.config.altura != null ? formatNum(DB.config.altura, 0) : '';
   document.getElementById('cfgPeso').value = DB.config.pesoRef != null ? formatNum(DB.config.pesoRef, 1) : '';
   document.getElementById('cfgMetaAgua').value = DB.config.metaAgua != null ? formatNum(DB.config.metaAgua, 1) : '';
+  document.getElementById('cfgEnantatoMg').value = DB.hormonal.concentracoes.enantato || '';
+  document.getElementById('cfgMasteronMg').value = DB.hormonal.concentracoes.masteron || '';
+  document.getElementById('cfgHormonalLab').value = DB.hormonal.laboratorio || '';
+  document.getElementById('cfgHormonalLote').value = DB.hormonal.lote || '';
+  document.getElementById('cfgHormonalValidade').value = DB.hormonal.validade || '';
 
   document.querySelectorAll('#temaSeletor [data-theme]').forEach(b => b.classList.toggle('is-active', b.dataset.theme === DB.config.tema));
 
@@ -859,7 +943,7 @@ function renderListaRefeicoesCfg() {
     <div class="cfg-item">
       <div class="cfg-item-info">
         <div class="cfg-item-nome">${escapeHtml(r.nome)}</div>
-        <div class="cfg-item-sub">${escapeHtml(r.horario)} · ~${r.kcal} kcal</div>
+        <div class="cfg-item-sub">${escapeHtml(r.horario)}${r.kcal ? ` · ~${r.kcal} kcal` : ''}</div>
       </div>
       <div class="cfg-item-actions">
         <button data-edit-refeicao="${r.id}">Editar</button>
@@ -892,7 +976,7 @@ function renderListaTreinoCfg() {
         <div class="cfg-item">
           <div class="cfg-item-info">
             <div class="cfg-item-nome">${escapeHtml(e.nome)}</div>
-            <div class="cfg-item-sub">${e.series}x${e.reps}</div>
+            <div class="cfg-item-sub">${escapeHtml(e.protocolo || `${e.series}x${e.reps}`)}</div>
           </div>
           <div class="cfg-item-actions">
             <button data-edit-ex="${k}|${e.id}">Editar</button>
@@ -1083,10 +1167,10 @@ function timestampArquivo() {
 
 function exportarBackup() {
   const payload = {
-    versao: 1,
+    versao: APP_VERSION,
     exportadoEm: new Date().toISOString(),
     config: DB.config, dieta: DB.dieta, treino: DB.treino, suplementos: DB.suplementos,
-    registros: DB.registros, ultimaCarga: DB.ultimaCarga, evolucao: DB.evolucao,
+    registros: DB.registros, ultimaCarga: DB.ultimaCarga, evolucao: DB.evolucao, hormonal: DB.hormonal,
   };
   downloadArquivo(JSON.stringify(payload, null, 2), `backup-shape-de-pai-${timestampArquivo()}.json`, 'application/json');
   DB.backupMeta.ultimoBackup = todayISO();
@@ -1108,6 +1192,7 @@ function importarBackup(file) {
         DB.registros = dados.registros || {};
         DB.ultimaCarga = dados.ultimaCarga || {};
         DB.evolucao = dados.evolucao || seedEvolucao();
+        DB.hormonal = dados.hormonal || seedHormonal();
         persistAll();
         aplicarTema();
         renderAtual();
@@ -1121,7 +1206,7 @@ function importarBackup(file) {
 }
 
 function exportarCSV() {
-  const linhas = [['Data', 'Dia da Semana', 'Pontuação', 'Faixa', 'Dieta %', 'Treino %', 'Cardio', 'Água (L)', 'Suplementos %'].join(';')];
+  const linhas = [['Data', 'Dia da Semana', 'Pontuação', 'Faixa', 'Dieta %', 'Treino %', 'Cardio', 'Água (L)', 'Suplementos %', 'Hormonal'].join(';')];
   Object.keys(DB.registros).sort().forEach(iso => {
     const ad = calcularAderencia(iso);
     const banda = getBanda(ad.score);
@@ -1130,12 +1215,53 @@ function exportarCSV() {
       formatDataBR(iso), weekdayNome(iso), ad.score, banda.label,
       Math.round(ad.dietaPct), Math.round(ad.treinoPct),
       reg.cardio === 'sim' ? 'Sim' : reg.cardio === 'nao' ? 'Não' : '',
-      formatNum(reg.agua / 1000, 2), Math.round(ad.supPct),
+      formatNum(reg.agua / 1000, 2), Math.round(ad.supPct), reg.hormonal ? reg.hormonal.status : '',
     ].join(';'));
   });
   const csv = '﻿' + linhas.join('\r\n');
   downloadArquivo(csv, `historico_shape_de_pai_${timestampArquivo()}.csv`, 'text/csv;charset=utf-8');
   showToast('CSV exportado');
+}
+
+function abrirOpcoesPDF() {
+  document.getElementById('modalFormTitulo').textContent = 'Relatório visual em PDF';
+  document.getElementById('modalFormCorpo').innerHTML = `
+    <p class="muted" style="margin-bottom:14px">Escolha o período. Uma prévia pronta para imprimir ou salvar em PDF será aberta.</p>
+    <div class="field"><label>Período</label><select id="pdfPeriodo"><option value="7">Últimos 7 dias</option><option value="14">Últimos 14 dias</option><option value="30" selected>Últimos 30 dias</option><option value="mes">Mês atual</option><option value="personalizado">Personalizado</option></select></div>
+    <div class="form-grid" id="pdfDatas" style="margin-top:12px" hidden><div class="field"><label>Início</label><input type="date" id="pdfInicio"></div><div class="field"><label>Fim</label><input type="date" id="pdfFim" value="${todayISO()}"></div></div>`;
+  document.getElementById('modalForm').hidden = false;
+  document.getElementById('pdfPeriodo').addEventListener('change', e => document.getElementById('pdfDatas').hidden = e.target.value !== 'personalizado');
+  abrirModalFormComSalvar(() => {
+    const tipo = document.getElementById('pdfPeriodo').value;
+    let fim = todayISO(), inicio;
+    if (tipo === 'mes') inicio = `${fim.slice(0, 7)}-01`;
+    else if (tipo === 'personalizado') { inicio = document.getElementById('pdfInicio').value; fim = document.getElementById('pdfFim').value || fim; if (!inicio) { showToast('Informe a data inicial'); return false; } }
+    else inicio = addDias(fim, -(Number(tipo) - 1));
+    gerarRelatorioPDF(inicio, fim);
+    return true;
+  });
+}
+
+function gerarRelatorioPDF(inicio, fim) {
+  const datas = Object.keys(DB.registros).filter(d => d >= inicio && d <= fim).sort();
+  const metricas = datas.map(d => calcularAderencia(d));
+  const media = campo => metricas.length ? Math.round(metricas.reduce((s, m) => s + (m[campo] == null ? 0 : m[campo]), 0) / metricas.length) : 0;
+  const aplicacoes = datas.map(d => ({ data: d, reg: DB.registros[d], agenda: agendaHormonalDoDia(d) })).filter(x => x.agenda.length);
+  const realizadas = aplicacoes.filter(x => x.reg.hormonal && x.reg.hormonal.status === 'aplicado').length;
+  const medicoes = DB.evolucao.filter(e => e.data >= inicio && e.data <= fim).sort((a,b) => a.data.localeCompare(b.data));
+  const cards = [['Adesão geral', media('score')], ['Treino', media('treinoPct')], ['Dieta', media('dietaPct')], ['Cardio', media('cardioPct')], ['Água', media('aguaPct')], ['Suplementos', media('supPct')]];
+  const linhas = datas.length ? datas.map(d => { const a = calcularAderencia(d); return `<tr><td>${formatDataBR(d)}</td><td>${a.score}%</td><td>${Math.round(a.treinoPct)}%</td><td>${Math.round(a.dietaPct)}%</td><td>${formatNum(DB.registros[d].agua/1000,2)}L</td><td>${DB.registros[d].hormonal ? DB.registros[d].hormonal.status : '—'}</td></tr>`; }).join('') : '<tr><td colspan="6">Nenhum registro no período.</td></tr>';
+  const janela = window.open('', '_blank');
+  if (!janela) { showToast('Permita a abertura da prévia do PDF'); return; }
+  janela.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Relatório Shape de Pai</title><style>
+    @page{size:A4;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#17181d;margin:0;background:#fff}header{background:linear-gradient(135deg,#17181d,#38202b);color:#fff;padding:26px;border-radius:18px;margin-bottom:18px}h1{margin:3px 0;font-size:28px}h2{font-size:17px;margin:22px 0 10px}.sub{color:#ddd;font-size:12px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{border:1px solid #e4e4e8;border-radius:14px;padding:13px}.card b{display:block;font-size:22px;color:#8d1738;margin-top:5px}.bar{height:6px;background:#eee;border-radius:8px;margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#8d1738,#d94670)}table{width:100%;border-collapse:collapse;font-size:11px}th,td{padding:8px;border-bottom:1px solid #ddd;text-align:left}.danger{background:#17181d;color:#fff;border-radius:16px;padding:16px}.danger strong{color:#ff668f}.note{font-size:10px;color:#666;margin-top:18px}footer{font-size:9px;color:#777;margin-top:24px;text-align:center}@media print{button{display:none}.card,.danger,table{break-inside:avoid}}button{position:fixed;right:20px;bottom:20px;background:#8d1738;color:#fff;border:0;border-radius:999px;padding:14px 20px;font-weight:bold}
+  </style></head><body><header><div>PROJETO SHAPE DE PAI · RELATÓRIO DE EVOLUÇÃO</div><h1>${escapeHtml(DB.config.nome)}</h1><div class="sub">Período: ${formatDataBR(inicio)} a ${formatDataBR(fim)} · Emitido em ${new Date().toLocaleString('pt-BR')}</div></header>
+  <section class="grid">${cards.map(c => `<div class="card"><span>${c[0]}</span><b>${c[1]}%</b><div class="bar"><i style="width:${c[1]}%"></i></div></div>`).join('')}</section>
+  <h2>Evolução corporal</h2><div class="card">${medicoes.length ? `<b>${formatNum(medicoes[0].peso,1)}kg → ${formatNum(medicoes[medicoes.length-1].peso,1)}kg</b><p>${medicoes.length} medição(ões) no período.</p>` : '<p>Nenhuma medição registrada no período.</p>'}</div>
+  <h2>Protocolo Hormonal ☠️💉</h2><div class="danger"><strong>${realizadas} de ${aplicacoes.length}</strong> aplicações realizadas no período.<br>Enantato: 2ml/semana · Masteron: 2,5ml/semana · Total: 4,5ml/semana</div>
+  <h2>Resumo diário</h2><table><thead><tr><th>Data</th><th>Geral</th><th>Treino</th><th>Dieta</th><th>Água</th><th>Hormonal</th></tr></thead><tbody>${linhas}</tbody></table>
+  <p class="note">Registro pessoal de acompanhamento. Este relatório não substitui orientação ou avaliação médica.</p><footer>Projeto Shape de Pai · Dados armazenados localmente</footer><button onclick="window.print()">Salvar / Imprimir PDF</button></body></html>`);
+  janela.document.close();
 }
 
 /* ===================== TEMA ===================== */
@@ -1151,6 +1277,7 @@ function bindTabbar() {
   document.querySelectorAll('.tab-item').forEach(btn => {
     btn.addEventListener('click', () => switchView(btn.dataset.view));
   });
+  document.querySelectorAll('[data-open-protocolo]').forEach(btn => btn.addEventListener('click', () => switchView('protocolo')));
 }
 
 function bindDateNav() {
@@ -1245,8 +1372,20 @@ function bindConfigForms() {
   document.getElementById('btnAddRefeicao').addEventListener('click', () => abrirModalRefeicao(null));
   document.getElementById('btnAddSuplemento').addEventListener('click', () => abrirModalSuplemento(null));
 
+  document.getElementById('btnSalvarHormonal').addEventListener('click', () => {
+    DB.hormonal.concentracoes.enantato = parseNum(document.getElementById('cfgEnantatoMg').value);
+    DB.hormonal.concentracoes.masteron = parseNum(document.getElementById('cfgMasteronMg').value);
+    DB.hormonal.laboratorio = document.getElementById('cfgHormonalLab').value.trim();
+    DB.hormonal.lote = document.getElementById('cfgHormonalLote').value.trim();
+    DB.hormonal.validade = document.getElementById('cfgHormonalValidade').value;
+    saveJSON(LS.hormonal, DB.hormonal);
+    showToast('Protocolo hormonal salvo');
+  });
+
   document.getElementById('btnExportarBackup').addEventListener('click', exportarBackup);
   document.getElementById('btnExportarCSV').addEventListener('click', exportarCSV);
+  document.getElementById('btnExportarPDF').addEventListener('click', abrirOpcoesPDF);
+  document.getElementById('btnGerarPDF').addEventListener('click', abrirOpcoesPDF);
   document.getElementById('btnImportarBackup').addEventListener('click', () => document.getElementById('inputImportarBackup').click());
   document.getElementById('inputImportarBackup').addEventListener('change', (e) => {
     if (e.target.files[0]) importarBackup(e.target.files[0]);

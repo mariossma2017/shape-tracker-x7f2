@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shape-de-pai-v1';
+const CACHE_NAME = 'shape-de-pai-v3';
 const ASSETS = [
   './index.html',
   './style.css',
@@ -28,15 +28,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
+    fetch(event.request).then((response) => {
         if (response && response.ok && response.type === 'basic') {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
-      }).catch(() => cached);
-    })
+      }).catch(() => caches.match(event.request))
   );
 });

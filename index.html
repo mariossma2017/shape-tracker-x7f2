@@ -110,6 +110,57 @@
         <div id="listaSuplementosHoje" class="supl-list"></div>
       </div>
 
+      <div class="hormone-card" id="cardHormonalHoje">
+        <div class="hormone-card-head">
+          <div><span class="hormone-kicker">PROTOCOLO</span><h2>☠️ Hormônios 💉</h2></div>
+          <button class="btn btn-hormone btn-sm" data-open-protocolo>Ver protocolo</button>
+        </div>
+        <div id="hormonalHojeConteudo"></div>
+      </div>
+
+    </section>
+
+    <!-- ---------- PROTOCOLO HORMONAL ---------- -->
+    <section class="view" id="view-protocolo" hidden>
+      <div class="protocol-hero">
+        <div class="protocol-skull">☠️</div>
+        <div>
+          <span class="hormone-kicker">CONTROLE PESSOAL</span>
+          <h1>Protocolo Hormonal</h1>
+          <p>Registro de aplicações e acompanhamento semanal</p>
+        </div>
+        <div class="protocol-syringe">💉</div>
+      </div>
+      <div class="protocol-summary" id="protocoloResumo"></div>
+      <div class="panel fase1-panel">
+        <div class="panel-header"><h2>Fase 1 · Diretrizes</h2></div>
+        <div class="fase1-grid">
+          <div><span>💧</span><strong>6 litros</strong><small>Água, chás e café</small></div>
+          <div><span>🏃</span><strong>AEJ diário</strong><small>40min · qui/dom 60min</small></div>
+          <div><span>❤️</span><strong>Até 120 bpm</strong><small>Limite do AEJ</small></div>
+          <div><span>⏱️</span><strong>40s / 50s</strong><small>Descanso normal / bi-série</small></div>
+        </div>
+        <div class="fase1-notes">
+          <p><b>Treino:</b> progredir carga, executar com amplitude, alongar e fazer mobilidade quando possível.</p>
+          <p><b>Pré-treino:</b> 200mg de cafeína ou pré-treino opcional, 15 minutos antes.</p>
+          <p><b>Refeição livre:</b> uma a cada duas semanas, após avaliação.</p>
+          <p><b>Feedback:</b> enviar a cada duas semanas, em jejum, no sábado ou domingo.</p>
+        </div>
+      </div>
+      <div class="panel protocol-panel">
+        <div class="panel-header"><h2>Agenda hormonal semanal</h2></div>
+        <div id="protocoloAgenda"></div>
+      </div>
+      <div class="panel protocol-panel">
+        <div class="panel-header"><h2>Aplicação do dia</h2></div>
+        <div class="date-nav date-nav-standalone">
+          <button class="btn-icon-sm" data-datenav="protocolo" data-dir="-1" aria-label="Dia anterior">‹</button>
+          <button class="btn-chip" data-datenav="protocolo" data-dir="0">Hoje</button>
+          <button class="btn-icon-sm" data-datenav="protocolo" data-dir="1" aria-label="Próximo dia">›</button>
+        </div>
+        <div id="protocoloDia"></div>
+      </div>
+      <p class="medical-note">Registro pessoal de acompanhamento. O aplicativo não substitui orientação médica.</p>
     </section>
 
     <!-- ---------- TREINO ---------- -->
@@ -150,6 +201,8 @@
         <h1>Evolução</h1>
         <p class="subtitle">Registre suas medidas periodicamente</p>
       </div>
+
+      <button class="btn btn-report btn-block report-cta" id="btnGerarPDF">📊 Gerar relatório visual em PDF</button>
 
       <div class="panel form-panel">
         <form id="formEvolucao" novalidate>
@@ -321,6 +374,19 @@
         <div id="listaSuplementosCfg"></div>
       </div>
 
+      <div class="panel protocol-panel">
+        <div class="panel-header"><h2>Protocolo Hormonal ☠️💉</h2></div>
+        <p class="muted small">As doses em mg só aparecem depois que a concentração for informada.</p>
+        <div class="form-grid">
+          <div class="field"><label for="cfgEnantatoMg">Enantato (mg/ml)</label><input type="text" inputmode="decimal" id="cfgEnantatoMg" placeholder="Opcional"></div>
+          <div class="field"><label for="cfgMasteronMg">Masteron (mg/ml)</label><input type="text" inputmode="decimal" id="cfgMasteronMg" placeholder="Opcional"></div>
+          <div class="field field-wide"><label for="cfgHormonalLab">Laboratório / fabricante</label><input type="text" id="cfgHormonalLab" placeholder="Opcional"></div>
+          <div class="field"><label for="cfgHormonalLote">Lote</label><input type="text" id="cfgHormonalLote" placeholder="Opcional"></div>
+          <div class="field"><label for="cfgHormonalValidade">Validade</label><input type="month" id="cfgHormonalValidade"></div>
+        </div>
+        <div class="form-actions"><button class="btn btn-hormone" id="btnSalvarHormonal">Salvar configurações</button></div>
+      </div>
+
       <div class="panel">
         <div class="panel-header"><h2>Backup e Exportação</h2></div>
         <p class="muted small" id="backupAvisoInfo"></p>
@@ -329,6 +395,7 @@
           <input type="file" id="inputImportarBackup" accept="application/json" hidden>
           <button class="btn btn-secondary btn-block" id="btnImportarBackup">Importar backup (.json)</button>
           <button class="btn btn-secondary btn-block" id="btnExportarCSV">Exportar histórico (.csv)</button>
+          <button class="btn btn-report btn-block" id="btnExportarPDF">Gerar relatório visual em PDF</button>
         </div>
       </div>
 
@@ -340,7 +407,7 @@
         </div>
       </div>
 
-      <p class="app-version">Projeto Shape de Pai · v1.0</p>
+      <p class="app-version">Projeto Shape de Pai · v3.0</p>
     </section>
 
   </main>
@@ -359,13 +426,13 @@
       <svg viewBox="0 0 24 24"><path d="M6 3v8a3 3 0 003 3v7M6 3v6M9 3v6M12 3v8M18 3c-2 0-3 2-3 5s1 4 3 5v8" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span>Dieta</span>
     </button>
+    <button class="tab-item" data-view="protocolo">
+      <span class="tab-emoji">☠️</span>
+      <span>Protocolo</span>
+    </button>
     <button class="tab-item" data-view="evolucao">
       <svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M7 15l4-4 3 3 5-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span>Evolução</span>
-    </button>
-    <button class="tab-item" data-view="historico">
-      <svg viewBox="0 0 24 24"><path d="M4 5h16M6 5v15h12V5M9 2v4M15 2v4M4 10h16" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
-      <span>Histórico</span>
     </button>
     <button class="tab-item" data-view="config">
       <svg viewBox="0 0 24 24"><path d="M12 9a3 3 0 100 6 3 3 0 000-6zm8.4 3a7.6 7.6 0 00-.14-1.4l2-1.55-2-3.46-2.36.95a7.6 7.6 0 00-2.4-1.4L15 2.6h-4l-.5 2.54a7.6 7.6 0 00-2.4 1.4l-2.36-.95-2 3.46 2 1.55A7.6 7.6 0 003.6 12c0 .47.05.95.14 1.4l-2 1.55 2 3.46 2.36-.95c.7.6 1.5 1.08 2.4 1.4L9 21.4h4l.5-2.54c.9-.32 1.7-.8 2.4-1.4l2.36.95 2-3.46-2-1.55c.09-.45.14-.93.14-1.4z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/></svg>
