@@ -3,7 +3,7 @@ const BASE_PAYMENT = 700;
 const MAX_PAYMENT = 840;
 const RULES = [
   {id:'rnc',name:'RNC por responsabilidade por milhão de km',type:'SETOR',better:'menor',weight:20,target:21,unit:'índice',format:v=>fmt(v,1),attain:v=>v<=21?1.2:0,range:'Até 21,0'},
-  {id:'dss',name:'DSS realizados presencialmente',type:'INDIVIDUAL',better:'maior',weight:25,target:40,unit:'quantidade',format:v=>fmt(v,0),attain:v=>v<32?0:v<40?.8:v<48?1:1.2,range:'32 / 40 / 48'},
+  {id:'dss',name:'DSS realizados presencialmente',type:'INDIVIDUAL',better:'maior',weight:25,target:28,unit:'quantidade',format:v=>fmt(v,0),attain:v=>v<20?0:v<28?.8:v<36?1:1.2,range:'20 / 28 / 36'},
   {id:'speed',name:'Alertas de velocidade por milhão de km',type:'SETOR',better:'menor',weight:10,target:12000,unit:'índice',format:v=>fmt(v,0),attain:v=>v<=12000?1.2:0,range:'Até 12.000'},
   {id:'disciplinary',name:'Tratativa das orientações disciplinares',type:'SETOR',better:'maior',weight:30,target:.8,unit:'percentual',format:v=>pct(v),attain:v=>v>=.8?1.2:0,range:'80% ou mais'},
   {id:'critical',name:'Acompanhamento de motoristas críticos',type:'INDIVIDUAL',better:'maior',weight:15,target:2,unit:'quantidade',format:v=>fmt(v,0),attain:v=>v<1?0:v<2?.8:v<3?1:1.2,range:'1 / 2 / 3'}
