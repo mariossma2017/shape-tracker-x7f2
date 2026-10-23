@@ -17,11 +17,11 @@ const LS = {
   appVersion: 'psp_app_version',
 };
 
-const APP_VERSION = 3;
+const APP_VERSION = 4;
 
 const DIAS_SEMANA_NOME = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 const DIAS_SEMANA_KEY = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
-const CARDIO_INFO = 'AEJ todos os dias. Segunda, terça, quarta, sexta e sábado: 40min. Quinta e domingo: 60min. Não ultrapassar 120 bpm.';
+const CARDIO_INFO = 'AEJ diário: 50min, até 120 bpm. Quinta e domingo: 40min de AEJ + 60min em outro horário.';
 
 /* ===================== DADOS INICIAIS (SEED) — protocolo real ===================== */
 function seedConfig() {
@@ -36,14 +36,14 @@ function seedConfig() {
 }
 
 function seedDieta() {
-  return [
-    { id: 'r1', ordem: 1, nome: 'Café da manhã pós-AEJ', horario: 'Pós-AEJ', itens: ['1 pão francês', '2 claras + 1 gema', '20g de requeijão cremoso light', 'Café preto sem açúcar (adoçante e leite desnatado opcionais)'], kcal: null, proteina: null, carbo: null, gordura: null },
-    { id: 'r2', ordem: 2, nome: 'Lanche da manhã', horario: 'Manhã', itens: ['100g de frutas: banana, mamão, maçã ou morango', '30g de whey protein concentrado'], kcal: null, proteina: null, carbo: null, gordura: null },
-    { id: 'r3', ordem: 3, nome: 'Almoço', horario: 'Almoço', itens: ['180g de arroz cozido OU macarrão cozido com molho de tomate natural', '130g de peito de frango OU 110g de carne magra', '100g de mix de legumes', 'Salada verde opcional (folhas)'], kcal: null, proteina: null, carbo: null, gordura: null },
-    { id: 'r4', ordem: 4, nome: 'Lanche da tarde', horario: 'Tarde', itens: ['200g de mix de frutas', '1 iogurte desnatado (160ml)', '20g de whey protein'], kcal: null, proteina: null, carbo: null, gordura: null },
-    { id: 'r5', ordem: 5, nome: 'Pré-treino', horario: 'Pré-treino', itens: ['1 pão francês', '30g de doce de leite'], kcal: null, proteina: null, carbo: null, gordura: null },
-    { id: 'r6', ordem: 6, nome: 'Pós-treino', horario: 'Pós-treino', itens: ['120g de frango OU 100g de carne magra', '150g de arroz cozido', '120g de abacaxi'], kcal: null, proteina: null, carbo: null, gordura: null },
-  ];
+ return [
+ {id:'r1',ordem:1,nome:'Café da manhã pós-AEJ',horario:'Pós-AEJ',itens:['1 pão francês','1 ovo inteiro','20g requeijão cremoso light','100g mamão OU abacaxi','Café preto sem açúcar (adoçante e leite desnatado opcionais)'],kcal:null,proteina:null,carbo:null,gordura:null},
+ {id:'r2',ordem:2,nome:'Lanche da manhã',horario:'Manhã',itens:['150g frutas (banana, mamão, maçã ou morango)','30g whey protein concentrado'],kcal:null,proteina:null,carbo:null,gordura:null},
+ {id:'r3',ordem:3,nome:'Almoço',horario:'Almoço',itens:['100g arroz cozido OU macarrão com molho de tomate natural','100g batata-doce OU inglesa','120g peito de frango OU 100g carne magra','5g azeite virgem','Salada verde opcional'],kcal:null,proteina:null,carbo:null,gordura:null},
+ {id:'r4',ordem:4,nome:'Lanche da tarde',horario:'Tarde',itens:['100g mix de frutas','20g castanhas, nozes OU amendoim','1 iogurte desnatado (160ml)','20g whey protein'],kcal:null,proteina:null,carbo:null,gordura:null},
+ {id:'r5',ordem:5,nome:'Pré-treino',horario:'Pré-treino',itens:['1 pão francês','20g doce de leite OU mel'],kcal:null,proteina:null,carbo:null,gordura:null},
+ {id:'r6',ordem:6,nome:'Pós-treino',horario:'Pós-treino',itens:['150g frango OU 120g carne magra','70g batata inglesa'],kcal:null,proteina:null,carbo:null,gordura:null}
+ ];
 }
 
 function descansoAtivo() {
@@ -57,15 +57,17 @@ function ex(nome, series, reps) { return { id: uid(), nome, series, reps }; }
 function exP(nome, protocolo) { return { id: uid(), nome, series: null, reps: null, protocolo }; }
 
 function seedTreino() {
-  return {
-    dom: { nome: 'Descanso de treino', tipo: 'descanso', exercicios: [], extra: ['AEJ: 60 minutos, sem ultrapassar 120 bpm'] },
-    seg: treinoOmbroPeito(),
-    ter: { nome: 'Perna completa', tipo: 'treino', descricao: 'Descanso: 40s em série normal e 50s em bi-série.', exercicios: [exP('Agachamento smith','1x20 + 2x15'),exP('Cadeira extensora','4x15'),exP('Afundo no smith','4x15'),exP('Stiff com halter','3x15'),exP('Mesa flexora','4x15'),exP('Panturrilha leg 45 + em pé','4x10 + 10')] },
-    qua: { nome: 'Ombro completo', tipo: 'treino', descricao: 'Descanso: 40s em série normal e 50s em bi-série.', exercicios: [exP('Flexão de solo','2x15'),exP('Elevação unilateral no cross','3x15'),exP('Elevação bilateral com halter','4x12'),exP('Elevação frontal com barra - pegada supinada','4x12'),exP('Remada alta no cross com barra','4x12'),exP('Desenvolvimento semiolímpico','4x10'),exP('Face pull','4x12'),exP('Crucifixo invertido com halter','4x12')] },
-    qui: { nome: 'Descanso de treino', tipo: 'descanso', exercicios: [], extra: ['AEJ: 60 minutos, sem ultrapassar 120 bpm'] },
-    sex: treinoOmbroPeito(),
-    sab: { nome: 'Costas + bíceps + tríceps + abdômen', tipo: 'treino', descricao: 'Descanso: 40s em série normal e 50s em bi-série.', exercicios: [exP('Puxador aberto','1x20 + 4x12'),exP('Remada baixa unilateral no cross','4x10'),exP('Rosca direta com barra','1x20 + 3x10'),exP('Rosca alternada com halter','4x12'),exP('Tríceps corda','4x12'),exP('Tríceps testa','3x12'),exP('Abdominal infra unilateral','3x15'),exP('Abdominal infra','4x15'),exP('Prancha isométrica','3x1min')] },
-  };
+ const desc='Descanso: 40s série normal / 50s bi-série. Alongamento e mobilidade: 10 segundos por posição.';
+ const peito={nome:'Peito + ombro',tipo:'treino',descricao:desc,exercicios:[exP('Flexão solo','2x15'),exP('Supino reto barra + crucifixo halter','3x10+12'),exP('Voador peitoral','1x20 + 3x15 (carga máxima)'),exP('Cross alto peitoral','3x15'),exP('Desenvolvimento halter','4x10 (carga fixa)'),exP('Elevação bilateral halter','4x10 (2s contração)'),exP('Elevação frontal cross corda','4x12'),exP('Elevação unilateral frontal','3x12')]};
+ return {
+ dom:{nome:'Descanso total',tipo:'descanso',exercicios:[],extra:['AEJ: 40min + 60min em outro horário, conforme plano']},
+ seg:peito,
+ ter:{nome:'Costas + panturrilha',tipo:'treino',descricao:desc,exercicios:[exP('Barra livre','2x12'),exP('Puxador unilateral','3x15 (2s contração)'),exP('Puxador aberto','1x20 + 3x10'),exP('Remada curvada barra','4x10'),exP('Remada unilateral máquina','4x12'),exP('Panturrilha máquina','4x12'),exP('Panturrilha leg 90 ou 45','4x12')]},
+ qua:peito,
+ qui:{nome:'Descanso de treino',tipo:'descanso',exercicios:[],extra:['AEJ: 40min + 60min em outro horário']},
+ sex:{nome:'Perna completa',tipo:'treino',descricao:desc,exercicios:[exP('Cadeira extensora unilateral','3x15'),exP('Leg unilateral','3x20 (segurar 3s embaixo)'),exP('Agachamento smith ou rack','4x10 a 12 (progredir carga)'),exP('Stiff barra ou halter','3x15'),exP('Cadeira flexora','3x15'),exP('Cadeira extensora','4x8+8+8 (carga máxima, 5s pausa a cada 8)')]},
+ sab:{nome:'Bíceps + tríceps + abdômen',tipo:'treino',descricao:desc,exercicios:[exP('Rosca direta barra ou máquina','1x20 + 3x12'),exP('Rosca alternada halter','4x12'),exP('Rosca direta barra W pegada fechada','4x12'),exP('Tríceps corda + mergulho livre','4x10+10'),exP('Tríceps francês halter','4x12'),exP('Abdominal infra','3x15'),exP('Prancha isométrica','3x1min')]}
+ };
 }
 
 function treinoOmbroPeito() {
@@ -92,6 +94,8 @@ function seedSuplementos() {
     { id: 'creatina', nome: 'Creatina', dose: '8g', momento: 'Intra-treino' },
     { id: 'eaas', nome: 'EAAs 9', dose: '7g', momento: 'Intra-treino' },
     { id: 'sal', nome: 'Sal', dose: '1g', momento: 'Intra-treino' },
+    { id: 'glicerina', nome: 'Glicerina bidestilada', dose: '7ml', momento: 'Intra-treino' },
+    { id: 'cafeina_pre', nome: 'Cafeína pré-treino OU pré-treino opcional', dose: '200mg OU opcional (15min antes)', momento: 'Pré-treino' },
   ];
 }
 
@@ -180,29 +184,22 @@ function saveJSON(key, value) { localStorage.setItem(key, JSON.stringify(value))
 let DB = {};
 
 function initData() {
-  const versaoAnterior = Number(localStorage.getItem(LS.appVersion) || 1);
-  if (versaoAnterior < APP_VERSION) {
-    // Nova fase solicitada: remove somente o histórico pessoal uma única vez.
-    localStorage.removeItem(LS.registros);
-    localStorage.removeItem(LS.ultimaCarga);
-    localStorage.removeItem(LS.evolucao);
-    localStorage.removeItem(LS.backupMeta);
-    localStorage.removeItem(LS.dieta);
-    localStorage.removeItem(LS.treino);
-    localStorage.removeItem(LS.suplementos);
-    localStorage.setItem(LS.appVersion, String(APP_VERSION));
-  }
-  DB.config = loadJSON(LS.config, null) || seedConfig();
-  if (versaoAnterior < APP_VERSION) DB.config.metaAgua = 6;
-  DB.dieta = loadJSON(LS.dieta, null) || seedDieta();
-  DB.treino = loadJSON(LS.treino, null) || seedTreino();
-  DB.suplementos = loadJSON(LS.suplementos, null) || seedSuplementos();
-  DB.registros = loadJSON(LS.registros, null) || {};
-  DB.ultimaCarga = loadJSON(LS.ultimaCarga, null) || {};
-  DB.evolucao = loadJSON(LS.evolucao, null) || seedEvolucao();
-  DB.backupMeta = loadJSON(LS.backupMeta, null) || { ultimoBackup: null };
-  DB.hormonal = loadJSON(LS.hormonal, null) || seedHormonal();
-  persistAll();
+ const anterior=Number(localStorage.getItem(LS.appVersion)||1);
+ DB.config=loadJSON(LS.config,null)||seedConfig();
+ DB.dieta=loadJSON(LS.dieta,null)||seedDieta();
+ DB.treino=loadJSON(LS.treino,null)||seedTreino();
+ DB.suplementos=loadJSON(LS.suplementos,null)||seedSuplementos();
+ DB.registros=loadJSON(LS.registros,null)||{};
+ DB.ultimaCarga=loadJSON(LS.ultimaCarga,null)||{};
+ DB.evolucao=loadJSON(LS.evolucao,null)||seedEvolucao();
+ DB.backupMeta=loadJSON(LS.backupMeta,null)||{ultimoBackup:null};
+ DB.hormonal=loadJSON(LS.hormonal,null)||seedHormonal();
+ if(anterior<4){
+   // Atualizar apenas o plano ativo; preservar registros, evolução, backup e protocolo pessoal.
+   DB.dieta=seedDieta(); DB.treino=seedTreino(); DB.suplementos=seedSuplementos();
+   DB.config.metaAgua=6;
+ }
+ persistAll();
 }
 function persistAll() {
   saveJSON(LS.config, DB.config);
